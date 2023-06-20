@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const requestLogger = (request, response, next) => {
@@ -8,6 +9,26 @@ const requestLogger = (request, response, next) => {
     next()
   }
 const cors = require('cors')
+// const mongoose = require('mongoose')
+
+
+// mongoose.set('strictQuery',false)
+// mongoose.connect(url)
+
+// const noteSchema = new mongoose.Schema({
+//   content: String,
+//   important: Boolean,
+// })
+
+// noteSchema.set('toJSON', {
+//   transform: (document, returnedObject) => {
+//     returnedObject.id = returnedObject._id.toString()
+//     delete returnedObject._id
+//     delete returnedObject.__v
+//   }
+// })
+
+const Note = require('./models/note')
 
 app.use(express.json())
 app.use(requestLogger)
@@ -38,7 +59,9 @@ app.get('/', (request, response) => {
   })
 
   app.get('/api/notes', (request, response) => {
-    response.json(notes)
+    Note.find({}).then(notes => {
+      response.json(notes)
+    })
   })
   
   app.get('/api/notes/:id', (request, response) => {
@@ -91,7 +114,7 @@ app.get('/', (request, response) => {
       
       app.use(unknownEndpoint)
 
-  const PORT = 3001
+  const PORT = process.env.PORT
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
   })
